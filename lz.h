@@ -1,13 +1,6 @@
-typedef struct _suffix {
-    size_t suffixcount;
-    char* string;
-    char** suffixes;
-} Word;
-
 typedef struct _string {
-    size_t length;
+    int length;
     char *string;
 } String;
 
-Word* make_word(char* string);
 String* make_string(char* string);
