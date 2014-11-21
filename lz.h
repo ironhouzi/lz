@@ -4,4 +4,10 @@ typedef struct _suffix {
     char** suffixes;
 } Word;
 
+typedef struct _string {
+    size_t length;
+    char *string;
+} String;
+
 Word* make_word(char* string);
+String* make_string(char* string);

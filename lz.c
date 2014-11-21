@@ -24,6 +24,22 @@ Word* make_word(char* string) {
     return word;
 }
 
+String* make_string(char* string)
+{
+    String* str = malloc(sizeof(String));
+    str->length = strlen(string);
+    // '\0' isn't needed due to str->length
+    str->string = malloc(str->length);
+    strncpy(str->string, string, str->length);
+    return str;
+}
+
+void del_string(String* str)
+{
+    free(str->string);
+    free(str);
+}
+
 void free_all(Word** all_words, int arraylen)
 {
     int i;
@@ -36,31 +52,53 @@ void free_all(Word** all_words, int arraylen)
     free(all_words);
 }
 
-int main()
+void read_stdin(char* buf, Word** words, int* wc)
 {
-    char buf[1024];
-    Word** words = malloc(100 * sizeof(Word*));
-    int n = 0;
     size_t len;
-    int i;
-    size_t j;
-
-
     while(NULL != fgets(buf, 1024, stdin)) {
         len = strlen(buf) - 1;
 
         if (buf[len] == '\n')
             buf[len] = '\0';
-        words[n++] = make_word(buf);
+        words[*wc] = make_word(buf);
+        *wc += 1;
     }
+}
 
-    for (i = 0; i < n; i++) {
+int ldist(String* str_s, String* str_t)
+{
+    size_t s_len = str_s->length + 1;
+    size_t t_len = str_t->length + 1;
+    int v0[s_len];
+    int v1[t_len];
+    int i, j;
+
+    for (i = 0; i < s_len; i++)
+        v0[i] = i;
+
+    for (i = 0; i < str_s->length; i++) {
+        for (j = 0; j < str_s->length; j++) {
+        }
+    }
+}
+
+int main()
+{
+    char buf[1024];
+    Word** words = malloc(100 * sizeof(Word*));
+    int i;
+    int wc = 0;
+    size_t j;
+
+    read_stdin(buf, words, &wc);
+
+    for (i = 0; i < wc; i++) {
         printf("%s\n", words[i]->string);
         for (j = 0; j < words[i]->suffixcount; j++) {
             printf("%s\n", words[i]->suffixes[j]);
         }
     }
 
-    free_all(words, n);
+    free_all(words, wc);
     return 0;
 }
