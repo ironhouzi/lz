@@ -72,12 +72,10 @@ int ldist(String* str_s, String* str_t)
 
 int main()
 {
-    /* Word** words = malloc(100 * sizeof(Word*)); */
     String** strings = malloc(100 * sizeof(String*));
     int i, j;
     int wc = 0;
 
-    /* read_stdin(buf, words, &wc); */
     string_from_stdin(strings, &wc);
 
     for (i = 0; i < wc; i++) {
@@ -86,15 +84,6 @@ int main()
         }
     }
 
-
-    /* for (i = 0; i < wc; i++) { */
-    /*     printf("%s\n", words[i]->string); */
-    /*     for (j = 0; j < words[i]->suffixcount; j++) { */
-    /*         printf("%s\n", words[i]->suffixes[j]); */
-    /*     } */
-    /* } */
-
     free_all(strings, wc);
-    /* free_all(words, wc); */
     return 0;
 }
