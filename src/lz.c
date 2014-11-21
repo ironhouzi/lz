@@ -45,43 +45,85 @@ void string_from_stdin(String** strings, int* wc)
     }
 }
 
+int min(const int x, const int y, const int z)
+{
+    int result = x;
+    result = (x < y) ? x : y;
+    result = (result < z) ? result : z;
+    /* printf("x: %d, y: %d, z: %d -> %d\n", x, y, z, result); */
+    /* printf("%d\n", result); */
+    return result;
+}
+
 int ldist(String* str_s, String* str_t)
 {
-    int s_len = str_s->length + 1;
-    int t_len = str_t->length + 1;
-    int v0[s_len];
-    int v1[t_len];
+    int len = (str_s->length < str_t->length) ? str_s->length : str_t->length;
+    if (strncmp(str_s->string, str_t->string, len) == 0)
+        return 0;
+
+    if (str_s->length == 0)
+        return str_t->length;
+
+    if (str_t->length == 0)
+        return str_s->length;
+
+    /* int s_len = str_s->length + 1; */
+    /* int t_len = str_t->length + 1; */
+    int s_len = str_s->length;
+    int t_len = str_t->length;
+    int s_vect[s_len];
+    int t_vect[t_len];
     int i, j, cost;
+    char chr_s;
+    char chr_t;
 
-    for (i = 0; i < s_len; i++)
-        v0[i] = i;
+    /* t_vect[t_len] = 0; */
+    for (i = 0; i <= s_len + 1; i++)
+        s_vect[i] = i;
 
-    for (i = 0; i < str_s->length; i++) {
+    for (i = 0; i < t_len + 1; i++)
+        t_vect[i] = 0;
 
-        v1[0] = i + 1;
+    for (i = 0; i < s_len; i++) {
+        t_vect[0] = i + 1;
 
-        for (j = 0; j < str_t->length; j++) {
-            cost = 1;
-            /* cost = (str_s[i] == str_t[j]) ? 0 : 1; */
-            /* if (strncmp((const) str_s->string[i], (const) str_t->string[j], sizeof(char)) == 0) */
+        for (j = 0; j < t_len; j++) {
+            chr_s = str_s->string[i];
+            chr_t = str_t->string[j];
+            cost = (strncmp(&chr_s, &chr_t, sizeof(char)) == 0) ? 0 : 1;
+            /* printf("%c == %c, cost: ", chr_s, chr_t); */
+            t_vect[j+1] = min(t_vect[j] + 1,
+                              s_vect[j+1] + 1,
+                              s_vect[j] + cost);
         }
+        /* printf("\n"); */
+
+        for (j = 0; j < s_len + 1; j++)
+            s_vect[j] = t_vect[j];
     }
 
-    return 1;
+    return t_vect[t_len];
 }
 
 int main()
 {
     String** strings = malloc(100 * sizeof(String*));
-    int i, j;
+    int i;
     int wc = 0;
+    /* String* i1 = make_string("Saturday"); */
+    /* String* i2 = make_string("Sunday"); */
+    /* String* i1 = make_string("kitten"); */
+    /* String* i2 = make_string("sitting"); */
+    char *str;
 
     string_from_stdin(strings, &wc);
 
+    /* printf("input: %s\n", i1->string); */
+    /* printf("input: %s\n", i2->string); */
+    /* printf("dist: %d\n", ldist(i1, i2)); */
     for (i = 0; i < wc; i++) {
-        for (j = 0; j < strings[i]->length; j++) {
-            printf("%s\n", &(strings[i]->string[j]));
-        }
+        str = strings[i]->string;
+        printf("%s - %d\n", str, ldist(input, strings[i]));
     }
 
     free_all(strings, wc);

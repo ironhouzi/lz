@@ -15,7 +15,7 @@ $(ODIR):
 	mkdir -p $(ODIR)
 
 clean :
-	-rm -f $(OBJ)*
+	-rm -f $(ODIR)*
 	-rm lz
 
 .PHONY : clean
