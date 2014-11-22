@@ -2,35 +2,30 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <limits.h>
 #include "lz.h"
 
-String* make_string(char* string)
+Entry* new_entry(char* string)
 {
-    String* str = malloc(sizeof(String));
-    str->length = strlen(string);
-    // '\0' isn't needed due to str->length
-    str->string = malloc(str->length);
-    strncpy(str->string, string, str->length);
+    int length = strlen(string) + 1;
+    Entry* str = malloc(sizeof(Entry));
+    str->string = malloc(length);
+    strncpy(str->string, string, length);
+    str->rank = INT_MAX;
     return str;
 }
 
-void del_string(String* str)
+void free_all(Entry** all_entries, int entry_count)
 {
-    free(str->string);
-    free(str);
-}
-
-void free_all(String** all_strings, int arraylen)
-{
-    for (int i = 0; i < arraylen; i++) {
-        free(all_strings[i]->string);
-        free(all_strings[i]);
+    for (int i = 0; i < entry_count; i++) {
+        free(all_entries[i]->string);
+        free(all_entries[i]);
     }
 
-    free(all_strings);
+    free(all_entries);
 }
 
-void string_from_stdin(String** strings, int* wc)
+void entry_from_stdin(Entry** entries, int* wc)
 {
     char buf[1024];
     int len;
@@ -40,7 +35,8 @@ void string_from_stdin(String** strings, int* wc)
 
         if (buf[len] == '\n')
             buf[len] = '\0';
-        strings[*wc] = make_string(buf);
+
+        entries[*wc] = new_entry(buf);
         *wc += 1;
     }
 }
@@ -55,39 +51,28 @@ int min(const int x, const int y, const int z)
     return result;
 }
 
-int compare(String *str_s, String *str_t)
-{
-    if (str_s->length != str_t->length)
-        return str_s->length - str_t->length;
-
-    for (int i = 0; i < str_s->length; i++)
-        if (str_s->string[i] != str_t->string[i])
-            return str_s->string[i] - str_t->string[i];
-    return 0;
-}
-
-int ldist(String* str_s, String* str_t)
+int ldist(Entry* str_s, Entry* str_t)
 {
     int len = 0;
+    int s_len = strlen(str_s->string);
+    int t_len = strlen(str_t->string);
 
-    if (str_s->length == str_t->length)
-        len = str_s->length;
-    else if (str_s->length < str_t->length)
-        len = str_s->length;
+    if (s_len == t_len)
+        len = s_len;
+    else if (s_len < t_len)
+        len = s_len;
     else
-        len = str_t->length;
+        len = t_len;
 
-    if (compare(str_s, str_t) == 0)
+    if (strcmp(str_s->string, str_t->string) == 0)
         return 0;
 
-    if (str_s->length == 0)
-        return str_t->length;
+    if (s_len == 0)
+        return t_len;
 
-    if (str_t->length == 0)
-        return str_s->length;
+    if (t_len == 0)
+        return s_len;
 
-    int s_len = str_s->length;
-    int t_len = str_t->length;
     int line_above[t_len + 1];
     int current_line[t_len + 1];
     int i, j, cost;
@@ -123,30 +108,30 @@ int ldist(String* str_s, String* str_t)
 
 int main()
 {
-    String** strings = malloc(100 * sizeof(String*));
+    Entry** entries = malloc(100 * sizeof(Entry*));
     int i;
-    int wc = 0;
-    String* i1 = make_string("doapp");
-    String* i2 = make_string("that some of its noisiest aut");
-    /* String* i1 = make_string("bob"); */
-    /* String* i2 = make_string("bomy"); */
-    /* String* i1 = make_string("Saturday"); */
-    /* String* i2 = make_string("Sunday"); */
-    /* String* i1 = make_string("kitten"); */
-    /* String* i2 = make_string("sitting"); */
-    /* String* input = make_string("worst"); */
+    int wc = 2;
+    entries[0] = new_entry("doapp");
+    entries[1] = new_entry("that some of its noisiest aut");
+    /* Entry* i1 = new_entry("bob"); */
+    /* Entry* i2 = new_entry("bomy"); */
+    /* Entry* i1 = new_entry("Saturday"); */
+    /* Entry* i2 = new_entry("Sunday"); */
+    /* Entry* i1 = new_entry("kitten"); */
+    /* Entry* i2 = new_entry("sitting"); */
+    /* Entry* input = new_entry("worst"); */
     char *str;
 
-    /* string_from_stdin(strings, &wc); */
+    /* entry_from_stdin(entries, &wc); */
 
-    printf("input: %s\n", i1->string);
-    printf("input: %s\n", i2->string);
-    printf("dist: %d\n", ldist(i1, i2));
+    printf("input: %s\n", entries[0]->string);
+    printf("input: %s\n", entries[1]->string);
+    printf("dist: %d\n", ldist(entries[0], entries[1]));
     /* for (i = 0; i < wc; i++) { */
-    /*     str = strings[i]->string; */
-    /*     printf("%s - %d\n", str, ldist(input, strings[i])); */
+    /*     str = entries[i]->string; */
+    /*     printf("%s - %d\n", str, ldist(input, entries[i])); */
     /* } */
 
-    free_all(strings, wc);
+    free_all(entries, wc);
     return 0;
 }

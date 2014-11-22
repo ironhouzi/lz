@@ -1,6 +1,6 @@
-typedef struct _string {
-    int length;
+typedef struct _entry {
+    int rank;
     char *string;
-} String;
+} Entry;
 
-String* make_string(char* string);
+Entry* new_entry(char* string);
