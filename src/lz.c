@@ -8,24 +8,28 @@
 Entry* new_entry(char* string)
 {
     int length = strlen(string) + 1;
-    Entry* str = malloc(sizeof(Entry));
-    str->string = malloc(length);
-    strncpy(str->string, string, length);
-    str->rank = INT_MAX;
-    return str;
+    Entry* entry = malloc(sizeof(Entry));
+    entry->string = malloc(length);
+    strncpy(entry->string, string, length);
+    entry->rank = INT_MAX;
+    return entry;
+}
+
+void del_entry(Entry * entry)
+{
+    free(entry->string);
+    free(entry);
 }
 
 void free_all(Entry** all_entries, int entry_count)
 {
-    for (int i = 0; i < entry_count; i++) {
-        free(all_entries[i]->string);
-        free(all_entries[i]);
-    }
+    for (int i = 0; i < entry_count; i++)
+        del_entry(all_entries[i]);
 
     free(all_entries);
 }
 
-void entry_from_stdin(Entry** entries, int* wc)
+void entry_from_stdin(Entry** entries, int* entry_count)
 {
     char buf[1024];
     int len;
@@ -36,8 +40,8 @@ void entry_from_stdin(Entry** entries, int* wc)
         if (buf[len] == '\n')
             buf[len] = '\0';
 
-        entries[*wc] = new_entry(buf);
-        *wc += 1;
+        entries[*entry_count] = new_entry(buf);
+        *entry_count += 1;
     }
 }
 
@@ -51,7 +55,7 @@ int min(const int x, const int y, const int z)
     return result;
 }
 
-int ldist(Entry* str_s, Entry* str_t)
+int ldist(const Entry* str_s, const Entry* str_t)
 {
     int len = 0;
     int s_len = strlen(str_s->string);
@@ -106,32 +110,51 @@ int ldist(Entry* str_s, Entry* str_t)
     return current_line[t_len];
 }
 
+int entry_cmp(const void *a, const void *b)
+{
+    const Entry *ia = *(const Entry **)a;
+    const Entry *ib = *(const Entry **)b;
+    /* printf("%d - %d = %d\n", ia->rank, ib->rank, ia->rank - ib->rank); */
+    return ia->rank - ib->rank;
+}
+
 int main()
 {
-    Entry** entries = malloc(100 * sizeof(Entry*));
+    Entry** entries = malloc(2000 * sizeof(Entry *));
     int i;
-    int wc = 2;
-    entries[0] = new_entry("doapp");
-    entries[1] = new_entry("that some of its noisiest aut");
+    int entry_count = 0;
+    char *str;
+    /* int entry_count = 2; */
+    /* entries[0] = new_entry("doapp"); */
+    /* entries[1] = new_entry("that some of its noisiest aut"); */
     /* Entry* i1 = new_entry("bob"); */
     /* Entry* i2 = new_entry("bomy"); */
     /* Entry* i1 = new_entry("Saturday"); */
     /* Entry* i2 = new_entry("Sunday"); */
     /* Entry* i1 = new_entry("kitten"); */
     /* Entry* i2 = new_entry("sitting"); */
-    /* Entry* input = new_entry("worst"); */
-    char *str;
+    /* Entry* input = new_entry("obligdenoisergbp"); */
+    Entry* input = new_entry("lzc");
+    printf("input: %s\n", input->string);
 
-    /* entry_from_stdin(entries, &wc); */
+    entry_from_stdin(entries, &entry_count);
 
-    printf("input: %s\n", entries[0]->string);
-    printf("input: %s\n", entries[1]->string);
-    printf("dist: %d\n", ldist(entries[0], entries[1]));
-    /* for (i = 0; i < wc; i++) { */
-    /*     str = entries[i]->string; */
-    /*     printf("%s - %d\n", str, ldist(input, entries[i])); */
-    /* } */
+    /* printf("input: %s\n", entries[1]->string); */
+    /* printf("dist: %d\n", ldist(entries[0], entries[1])); */
+    for (i = 0; i < entry_count; i++) {
+        str = entries[i]->string;
+        int rank = ldist(input, entries[i]);
+        /* printf("%s - %d\n", str, rank); */
+        entries[i]->rank = rank;
+    }
 
-    free_all(entries, wc);
+    qsort(entries, entry_count, sizeof(Entry *), entry_cmp);
+
+    /* printf("\n"); */
+    for (i = 0; i < entry_count; i++)
+        printf("%d\t%s - %d\n", i, entries[i]->string, entries[i]->rank);
+
+    free_all(entries, entry_count);
+    del_entry(input);
     return 0;
 }
