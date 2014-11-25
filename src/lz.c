@@ -95,7 +95,7 @@ int calculate_penalty(int j, int *matches, int *previous_matches, int length)
     int skip = 1;
     int found = 0;
     int penalty = 0;
-    printf("matches %d\n", matches[j]);
+    /* printf("matches %d\n", matches[j]); */
 
     for (int k = j+1; k < length || previous_matches[k]; k++) {
         if (matches[k]) {
@@ -110,7 +110,7 @@ int calculate_penalty(int j, int *matches, int *previous_matches, int length)
     if (!found)
         penalty += skip * length * 2;
     else
-        penalty += skip - (found * length / 4);
+        penalty += skip - (found * length);
 
     return penalty;
 }
@@ -128,10 +128,10 @@ int edit_distance(const Entry* str_s, const Entry* str_t)
 
     int line_above[str_t->length + 1];
     int current_line[str_t->length + 1];
-    int matches[str_t->length];
-    /* int *tmp = matches; */
-    int previous_matches[str_t->length];
-    /* int *tmpp = previous_matches; */
+    int matches[str_t->length + 1];
+    int previous_matches[str_t->length + 1];
+    /* int *matches = malloc(str_t->length * sizeof(int)); */
+    /* int *previous_matches = malloc(str_t->length * sizeof(int)); */
     int i, j, cost;
     char chr_s;
     char chr_t;
@@ -139,21 +139,21 @@ int edit_distance(const Entry* str_s, const Entry* str_t)
 
     for (i = 0; i < str_t->length + 1; i++) {
         line_above[i] = i;
-        previous_matches[i] = 0;
-        print_i(i, str_t->string[i]);
+        *(previous_matches + i) = 0;
+        /* print_i(i, str_t->string[i]); */
     }
-    printf("\n   ");
+    /* printf("\n   "); */
 
     for (i = 0; i < str_t->length + 1; i++) {
-        print_j(i, line_above[i]);
+        /* print_j(i, line_above[i]); */
         matches[i] = 0;
-        if (i == 10)
-            printf(" ");
+        /* if (i == 10) */
+        /*     printf(" "); */
     }
 
-    printf("\n");
+    /* printf("\n"); */
     for (i = 0; i < str_s->length; i++) {
-        printf("%c  %d  ", str_s->string[i], i + 1);
+        /* printf("%c  %d  ", str_s->string[i], i + 1); */
         current_line[0] = i + 1;
 
         for (j = 0; j < str_t->length; j++) {
@@ -165,9 +165,9 @@ int edit_distance(const Entry* str_s, const Entry* str_t)
             current_line[j+1] = min(current_line[j] + 1,
                                     line_above[j+1] + 1,
                                     line_above[j] + cost);
-            print_j(j, current_line[j+1]);
+            /* print_j(j, current_line[j+1]); */
         }
-        printf("\n");
+        /* printf("\n"); */
 
         for (j = 0; j < str_t->length + 1; j++) {
             line_above[j] = current_line[j];
@@ -185,6 +185,8 @@ int edit_distance(const Entry* str_s, const Entry* str_t)
         for (int j = 0; j < str_t->length; j++)
             previous_matches[j] = matches[j];
 
+        /* free(matches); */
+        /* free(previous_matches); */
     }
 
     return current_line[str_t->length] + penalty;
@@ -214,7 +216,7 @@ int main()
     /* Entry* i1 = new_entry("kitten"); */
     /* Entry* i2 = new_entry("sitting"); */
     /* Entry* input = new_entry("obligdenoisergbp"); */
-    Entry* input = new_entry("lzh");
+    Entry* input = new_entry("lzc");
     printf("input: %s\n", input->string);
 
     entry_from_stdin(entries, &entry_count);
