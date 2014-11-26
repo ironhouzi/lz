@@ -59,40 +59,6 @@ int min(const int x, const int y, const int z)
     return result;
 }
 
-void print_i(const int i, const char c)
-{
-    if (i == 0)
-        printf("      ");
-
-    printf("%c", c);
-
-    if (i < 8)
-        printf("  ");
-    else if (i == 8)
-        printf("   ");
-    else if (i == 9)
-        printf("   ");
-    else
-        printf("  ");
-}
-
-void print_j(const int j, const int val)
-{
-    printf("%d", val);
-    if (j < 10)
-        printf("  ");
-    else
-        printf(" ");
-}
-
-int first_match(int *list, int length)
-{
-    for (int i = 0; i < length; i++)
-        if (list[i])
-            return i;
-    return -1;
-}
-
 int calculate_penalty(const int *matches, const int *previous_matches,
                       const int len_s, const int len_t, const int penalty, int *j)
 {
@@ -126,9 +92,6 @@ int calculate_penalty(const int *matches, const int *previous_matches,
 
 int edit_distance(const char* str_s, const Entry* str_t)
 {
-    /* if (strcmp(str_s->string, str_t->string) == 0) */
-    /*     return 0; */
-
     int len_s = strlen(str_s);
     if (len_s == 0)
         return str_t->length;
@@ -151,33 +114,20 @@ int edit_distance(const char* str_s, const Entry* str_t)
         matches[i] = 0;
         line_above[i] = i;
         *(previous_matches + i) = 0;
-        /* print_i(i, str_t->string[i]); */
     }
-    /* printf("\n   "); */
 
-    /* for (i = 0; i < str_t->length + 1; i++) { */
-    /*     print_j(i, line_above[i]); */
-    /*     if (i == 10) */
-    /*         printf(" "); */
-    /* } */
-
-    /* printf("\n"); */
     for (i = 0; i < len_s; i++) {
-        /* printf("%c  %d  ", str_s[i], i + 1); */
         current_line[0] = i + 1;
 
         for (j = 0; j < str_t->length; j++) {
             chr_s = str_s[i];
             chr_t = str_t->string[j];
             cost = (strncmp(&chr_s, &chr_t, sizeof(char)) == 0) ? 0 : 1;
-            /* printf("%d\t%c == %c, cost: %d, ==> ", j, chr_s, chr_t, cost); */
             matches[j] = !cost;
             current_line[j+1] = min(current_line[j] + 1,
                                     line_above[j+1] + 1,
                                     line_above[j] + cost);
-            /* print_j(j, current_line[j+1]); */
         }
-        /* printf("\n"); */
 
         for (j = 0; j < str_t->length + 1; j++)
             if (previous_matches[j])
