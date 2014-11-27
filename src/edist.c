@@ -5,54 +5,12 @@
 #include <stdio.h>
 #include "edist.h"
 
-Entry* new_entry(const char* string)
-{
-    int length = strlen(string);
-    Entry* entry = malloc(sizeof(Entry));
-    entry->string = malloc(length + 1);
-    strncpy(entry->string, string, length + 1);
-    entry->rank = INT_MAX;
-    entry->length = length;
-    return entry;
-}
-
-void del_entry(Entry * entry)
-{
-    free(entry->string);
-    free(entry);
-}
-
-void free_all(Entry** all_entries, const int entry_count)
-{
-    for (int i = 0; i < entry_count; i++)
-        del_entry(all_entries[i]);
-
-    free(all_entries);
-}
-
-void entry_from_stdin(Entry** entries, int* entry_count)
-{
-    char buf[1024];
-    int len;
-
-    while(NULL != fgets(buf, 1024, stdin)) {
-        len = strlen(buf) - 1;
-
-        if (buf[len] == '\n')
-            buf[len] = '\0';
-
-        entries[*entry_count] = new_entry(buf);
-        *entry_count += 1;
-    }
-}
 
 int min(const int x, const int y, const int z)
 {
     int result = x;
     result = (x < y) ? x : y;
     result = (result < z) ? result : z;
-    /* printf("previous + 1: %d, above + 1: %d, diag + cost: %d -> %d\n", x, y, z, result); */
-    /* printf("%d\n", result); */
     return result;
 }
 
@@ -62,7 +20,6 @@ int calculate_penalty(const int *matches, const int *previous_matches,
     // TODO: maintain skip count accross all calculations
     int skip = 1;
     int found = 0;
-    /* printf("matches %d\n", matches[*j]); */
 
     for (int k = *j+1; k < len_t || previous_matches[k]; k++) {
         if (matches[k]) {
@@ -80,9 +37,7 @@ int calculate_penalty(const int *matches, const int *previous_matches,
     int diff = (len_s + skip);
     // Use power function to exagerate differences in skip distances
     diff = diff * diff;
-    /* int new = penalty + (diff - (len_t / found)); */
     int new = penalty + (diff - (found * len_t));
-    /* printf("j=%d\told: %d, new: %d\n", *j, penalty, new); */
 
     return new;
 }
@@ -90,10 +45,10 @@ int calculate_penalty(const int *matches, const int *previous_matches,
 int edit_distance(const char* str_s, const Entry* str_t)
 {
     int len_s = strlen(str_s);
-    if (len_s == 0)
+    if (0 == len_s)
         return str_t->length;
 
-    if (str_t->length == 0)
+    if (0 == str_t->length)
         return len_s;
 
     int line_above[str_t->length + 1];
@@ -119,7 +74,7 @@ int edit_distance(const char* str_s, const Entry* str_t)
         for (j = 0; j < str_t->length; j++) {
             chr_s = str_s[i];
             chr_t = str_t->string[j];
-            cost = (strncmp(&chr_s, &chr_t, sizeof(char)) == 0) ? 0 : 1;
+            cost = (0 == strncmp(&chr_s, &chr_t, sizeof(char))) ? 0 : 1;
             matches[j] = !cost;
             current_line[j+1] = min(current_line[j] + 1,
                                     line_above[j+1] + 1,

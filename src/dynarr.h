@@ -1,8 +1,11 @@
+#include "edist.h"
+
+
 typedef struct _strarray {
     size_t size;
     size_t index;
-    char **head;
+    Entry **elements;
 } Array;
 
-int add_element(Array* array, char* strptr);
+int add_element(Array* array, Entry* entry);
 void free_elements(Array* array);

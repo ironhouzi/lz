@@ -1,8 +1,27 @@
 #include <stdlib.h>
-#include "edist.h"
 #include <ncurses.h>
+#include <string.h>
+#include "edist.h"
+#include "dynarr.h"
 
 #define MAXBUF 21
+
+void entry_from_stdin(Entry** entries, int* entry_count)
+{
+    char buf[1024];
+    int len;
+
+    // TODO: Error check if buffer is exceeded
+    while(NULL != fgets(buf, 1024, stdin)) {
+        len = strlen(buf) - 1;
+
+        if ('\n' == buf[len])
+            buf[len] = '\0';
+
+        entries[*entry_count] = new_entry(buf);
+        *entry_count += 1;
+    }
+}
 
 void query(const int entry_count, const char *s, Entry **entries)
 {
@@ -46,19 +65,19 @@ int main()
     refresh();
 
     while (TRUE) {
-        if ((buf[pos] = getch()) == ERR) {
+        if (ERR == (buf[pos] = getch())) {
             move(row_count - 1, 0);
             wprintw(stdscr, "ERROR");
             getch();
             break;
         }
 
-        if (buf[pos] == '\n') {
+        if ('\n' == buf[pos]) {
             buf[pos] = 0;
             break;
         }
 
-        else if (buf[pos] == 127) {
+        else if (127 == buf[pos]) {
             buf[pos--] = 0;
             delete = TRUE;
         }
