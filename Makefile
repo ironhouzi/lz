@@ -1,24 +1,27 @@
-ODIR := obj/
-SDIR := src/
+OBJDIR := obj
+SRCDIR := src
 LDFLAGS = -lncurses
 #TODO fix -g
 DFLAGS = -g -std=c99 -Wall -Wextra -pedantic
+OBJECTS = $(addprefix $(OBJDIR)/, lz.o edist.o)
 CC = clang
 
-lz : $(ODIR)lz.o $(ODIR)edist.o
+lz : $(OBJECTS)
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-$(ODIR)lz.o : $(SDIR)$(wildcard lz.[ch])
-	$(CC) $(DFLAGS) -c $(SDIR)lz.c -o $@
+$(OBJDIR)/lz.o : $(SRCDIR)/$(wildcard lz.[ch])
+	$(CC) $(DFLAGS) -c $(SRCDIR)/lz.c -o $@
 
-$(ODIR)edist.o : $(SDIR)$(wildcard edist.[ch])
-	$(CC) $(DFLAGS) -c $(SDIR)edist.c -o $@
+$(OBJDIR)/edist.o : $(SRCDIR)/$(wildcard edist.[ch])
+	$(CC) $(DFLAGS) -c $(SRCDIR)/edist.c -o $@
 
-$(ODIR):
-	mkdir -p $(ODIR)
+$(OBJECTS) : $(OBJDIR)
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
 clean :
-	-rm -f $(ODIR)*
+	-rm -f $(OBJDIR)/*
 	-rm lz
 
 .PHONY : clean
