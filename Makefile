@@ -2,7 +2,7 @@ OBJDIR := obj
 SRCDIR := src
 LDFLAGS = -lncurses
 #TODO fix -g
-DFLAGS = -g -std=c99 -Wall -Wextra -pedantic
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -g
 OBJECTS = $(addprefix $(OBJDIR)/, lz.o edist.o)
 CC = clang
 
@@ -10,10 +10,10 @@ lz : $(OBJECTS)
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 $(OBJDIR)/lz.o : $(SRCDIR)/$(wildcard lz.[ch])
-	$(CC) $(DFLAGS) -c $(SRCDIR)/lz.c -o $@
+	$(CC) $(CFLAGS) -c $(SRCDIR)/lz.c -o $@
 
 $(OBJDIR)/edist.o : $(SRCDIR)/$(wildcard edist.[ch])
-	$(CC) $(DFLAGS) -c $(SRCDIR)/edist.c -o $@
+	$(CC) $(CFLAGS) -c $(SRCDIR)/edist.c -o $@
 
 $(OBJECTS) : $(OBJDIR)
 
