@@ -3,10 +3,10 @@ SRCDIR := src
 LDFLAGS = -lncurses
 #TODO fix -g
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -g
-OBJECTS = $(addprefix $(OBJDIR)/, lz.o edist.o)
+OBJECTS = $(addprefix $(OBJDIR)/, lz.o edist.o dynarr.o)
 CC = clang
 
-lz : $(ODIR)lz.o $(ODIR)edist.o $(ODIR)dynarr.o
+lz : $(OBJECTS)
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 $(OBJDIR)/lz.o : $(SRCDIR)/$(wildcard lz.[ch])
@@ -15,11 +15,13 @@ $(OBJDIR)/lz.o : $(SRCDIR)/$(wildcard lz.[ch])
 $(OBJDIR)/edist.o : $(SRCDIR)/$(wildcard edist.[ch])
 	$(CC) $(CFLAGS) -c $(SRCDIR)/edist.c -o $@
 
-$(ODIR)dynarr.o : $(SDIR)$(wildcard dynarr.[ch])
-	$(CC) $(DFLAGS) -c $(SDIR)dynarr.c -o $@
+$(OBJDIR)/dynarr.o : $(SRCDIR)/$(wildcard dynarr.[ch])
+	$(CC) $(CFLAGS) -c $(SRCDIR)/dynarr.c -o $@
 
-$(ODIR):
-	mkdir -p $(ODIR)
+$(OBJECTS) : $(OBJDIR)
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
 clean :
 	-rm -f $(OBJDIR)/*
