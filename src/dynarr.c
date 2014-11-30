@@ -4,14 +4,14 @@
 #include <limits.h>
 #include "dynarr.h"
 
-#define DOUBLE 2.0
-#define  HALVE 0.5
+#define FACTOR 2
+#define INIT_ARRAY_SIZE 256
 
 
 Entry* new_entry(const char* string)
 {
     int length = strlen(string);
-    Entry* entry = malloc(sizeof(Entry));
+    Entry *entry = malloc(sizeof (Entry));
     entry->string = malloc(length + 1);
     strncpy(entry->string, string, length + 1);
     entry->rank = INT_MAX;
@@ -33,29 +33,21 @@ void free_all(Entry** all_entries, const int entry_count)
     free(all_entries);
 }
 
-int modify_array_size (Array* array, const float factor)
+int grow_array(Array *array)
 {
-    // TODO
-    if (factor != DOUBLE || factor != HALVE)
-        return -2;
-
-    // TODO
-    if (factor == DOUBLE && (array->size * 2) > INT_MAX)
-        return -3;
-
     Entry **new = realloc(array->elements,
-                          factor * array->size * sizeof(Entry *));
+                          FACTOR * array->size * sizeof (Entry *));
 
     // TODO
     if(NULL == new) {
         printf("realloc error!\n");
-        return -1;
+        return 0;
     }
 
     array->elements = new;
-    array->size *= factor;
+    array->size *= FACTOR;
 
-    return 1;
+    return array->size;
 }
 
 int needs_doubling(Array *array)
@@ -63,22 +55,28 @@ int needs_doubling(Array *array)
     return array->size <= array->index;
 }
 
-void free_array(Array* array)
+void free_array(Array *array)
 {
-    for (int i = 0; i < array->index; i++)
-        free(array->elements[i]);
-
+    free_all(array->elements, array->index);
     free(array);
 }
 
-int add_element(Array* array, Entry* entry)
+Array *new_array(void)
 {
-    if (needs_doubling(array))
-        modify_array_size(array, DOUBLE);
+    Array *array = malloc(sizeof (Array));
+    array->index = 0;
+    array->size = INIT_ARRAY_SIZE;
+    array->elements = malloc(array->size * sizeof (Entry *));
 
-    array->elements[array->size] = malloc(sizeof(Entry *));
-    array->elements[array->size] = entry;
-    array->size++;
+    return array;
+}
 
-    return 1;
+int add_element(Array *array, const char *string)
+{
+    if (needs_doubling(array) && !grow_array(array))
+        return 0;
+
+    array->elements[array->index++] = new_entry(string);
+
+    return array->index;
 }
