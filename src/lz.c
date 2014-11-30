@@ -27,6 +27,7 @@ int entry_from_stdin(Array* array)
 
 void query(const char *input, Array  *array)
 {
+    //TODO: handle empty queries
     char *str;
 
     for (size_t i = 0; i < array->index; i++) {
@@ -85,6 +86,7 @@ int main()
 
         else if (127 == buf[pos]) {
             buf[pos--] = 0;
+            buf[pos] = 0;
             delete = TRUE;
         }
 
