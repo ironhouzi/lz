@@ -44,7 +44,7 @@ void print_entries(const Array *array, const size_t row_count)
 
     for (int i = 0; i < limit; i++) {
         move(i, 0);
-        wprintw(stdscr, array->elements[i]->string);
+        wprintw(stdscr, "%s", array->elements[i]->string);
     }
 }
 
@@ -101,7 +101,7 @@ int main()
         print_entries(array, row_count);
 
         move(row_count - 1, 0);
-        wprintw(stdscr, buf);
+        wprintw(stdscr, "%s", buf);
 
         if (delete) {
             move(row_count - 1, pos);
