@@ -32,7 +32,7 @@ int calculate_penalty(const int *matches, const int *previous_matches,
     *j += skip;
 
     if (!found)
-        return penalty + (skip * len_t * len_t);
+        return penalty + (skip * len_t * len_t * len_t);
 
     int diff = (len_s + skip);
     // Use power function to exagerate differences in skip distances
