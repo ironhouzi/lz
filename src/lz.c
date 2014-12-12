@@ -28,10 +28,8 @@ int entry_from_stdin(Array* array)
 void query(const char *input, Array  *array)
 {
     //TODO: handle empty queries
-    char *str;
 
     for (size_t i = 0; i < array->index; i++) {
-        str = array->elements[i]->string;
         int rank = edit_distance(input, array->elements[i]);
         array->elements[i]->rank = rank;
     }
@@ -45,7 +43,7 @@ void print_entries(const Array *array, const size_t row_count)
 
     for (int i = 0; i < limit; i++) {
         move(i, 0);
-        wprintw(stdscr, "%s", array->elements[i]->string);
+        wprintw(stdscr, "%s - %d", array->elements[i]->string, array->elements[i]->rank);
     }
 }
 
